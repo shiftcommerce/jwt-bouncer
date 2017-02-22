@@ -66,7 +66,7 @@ RSpec.describe JwtBouncer::Token do
         }.with_indifferent_access
 
         # Act
-        encoded_token = described_class.encode(input_data, shared_secret, expiry: Time.now.utc.to_i - 30)
+        encoded_token = described_class.encode(input_data, shared_secret)
 
         # Assert
         expect {

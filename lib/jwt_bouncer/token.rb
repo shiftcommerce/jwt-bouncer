@@ -5,11 +5,12 @@ module JwtBouncer
   module Token
     ALGORITHM = 'HS256'
 
-    def self.encode(data, shared_secret, expiry:)
-      payload = {
-        data: data,
-        exp: expiry.to_i
-      }
+    def self.encode(data, shared_secret, expiry: nil)
+      # setup our base payload
+      payload = { data: data }
+      # apply expiry, if necessary
+      payload[:exp] = expiry.to_i if expiry
+      # build the JWT
       JWT.encode(payload, shared_secret, ALGORITHM)
     end
 
