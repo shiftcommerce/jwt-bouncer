@@ -1,0 +1,14 @@
+version: '2'
+
+services:
+  app:
+    build: .
+    volumes:
+      - .:/app
+      - rubygems_cache:/rubygems
+    environment:
+      GEM_HOME: '/rubygems'
+      BUNDLE_PATH: '/rubygems'
+
+volumes:
+  rubygems_cache:

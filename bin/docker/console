@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+
+require 'bundler/setup'
+require 'jwt/bouncer'
+require 'pry'
+
+Pry.start
