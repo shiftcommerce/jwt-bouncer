@@ -21,8 +21,12 @@ module JwtBouncer
       decoded_token['actor']
     end
 
+    def permissions
+      decoded_token['permissions']
+    end
+
     def can?(action)
-      !!decoded_token.dig('permissions', action.to_s)
+      permissions && !!permissions[action.to_s]
     end
 
     private
