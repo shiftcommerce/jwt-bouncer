@@ -7,7 +7,7 @@ module JwtBouncer
 
     def self.encode(data, shared_secret, expiry: nil)
       # setup our base payload
-      payload = { data: data }
+      payload = { data: data, iat: Time.now.utc.to_i }
       # apply expiry, if necessary
       payload[:exp] = expiry.to_i if expiry
       # build the JWT
@@ -15,7 +15,7 @@ module JwtBouncer
     end
 
     def self.decode(token, shared_secret)
-      JWT.decode(token, shared_secret, true, { algorithm: ALGORITHM })[0]['data']
+      JWT.decode(token, shared_secret, true, { algorithm: ALGORITHM, verify_iat: true })[0]['data']
     end
   end
 end
