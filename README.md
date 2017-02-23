@@ -2,4 +2,8 @@
 
 JwtBouncer is an abstraction for JWT-based authentication/authorisation.
 
-* [Development Documentation](https://github.com/shiftcommerce/jwt-bouncer/blob/master/docs/development.md)
+### Contributing
+
+Read the [development documentation](https://github.com/shiftcommerce/jwt-bouncer/blob/master/docs/development.md) to understand how to work on the library locally.
+
+We welcome pull requests.
