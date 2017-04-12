@@ -23,6 +23,10 @@ module JwtBouncer
       decoded_token['actor']
     end
 
+    def account_reference
+      decoded_token["account_reference"]
+    end
+    
     def permissions
       @permissions ||= Permissions.decompress(decoded_token['permissions'])
     end
