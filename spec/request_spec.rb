@@ -1,6 +1,7 @@
 require 'active_support/core_ext/hash/indifferent_access'
 require 'jwt_bouncer/request'
 require 'jwt_bouncer/token'
+require 'jwt_bouncer/permissions'
 
 RSpec.describe JwtBouncer::Request do
   describe '#authenticated?' do
@@ -74,28 +75,95 @@ RSpec.describe JwtBouncer::Request do
   end
 
   describe '#can?' do
-    context 'when the permission exists and is true' do
+    context 'when the permission exists and is allowed' do
       it 'should return true' do
         # Arrange
-        token = JwtBouncer::Token.encode({ permissions: { update_product: true } }, 'secret')
+        permissions = JwtBouncer::Permissions.compress('App' => { 'Entity' => ['create'] })
+        token = JwtBouncer::Token.encode({ permissions: permissions }, 'secret')
         request = double(:request, headers: { 'Authorization' => "Bearer #{token}" })
 
         # Act
-        allowed = described_class.new(request, shared_secret: 'secret').can?(:update_product)
+        allowed = described_class.new(request, shared_secret: 'secret').can?('App' => { 'Entity' => ['create'] })
 
         # Assert
         expect(allowed).to eq(true)
       end
     end
 
-    context 'when the permission exists and is false' do
-      it 'should return false' do
+    context 'when the permission is complex and is allowed' do
+      it 'should return true' do
         # Arrange
-        token = JwtBouncer::Token.encode({ permissions: { update_product: false } }, 'secret')
+        permissions = JwtBouncer::Permissions.compress('App' => { 'Enity1' => ['read'], 'Entity2' => ['create'] })
+        token = JwtBouncer::Token.encode({ permissions: permissions }, 'secret')
         request = double(:request, headers: { 'Authorization' => "Bearer #{token}" })
 
         # Act
-        allowed = described_class.new(request, shared_secret: 'secret').can?(:update_product)
+        allowed = described_class.new(request, shared_secret: 'secret').can?('App' => { 'Enity1' => ['read'], 'Entity2' => ['create'] })
+
+        # Assert
+        expect(allowed).to eq(true)
+      end
+
+      it 'should return true' do
+        # Arrange
+        permissions = JwtBouncer::Permissions.compress('App1' => { 'Entity1' => ['read'], 'Entity2' => ['create'] },
+                                                       'App2' => { 'Entity' => ['create'] })
+        token = JwtBouncer::Token.encode({ permissions: permissions }, 'secret')
+        request = double(:request, headers: { 'Authorization' => "Bearer #{token}" })
+
+        # Act
+        allowed = described_class.new(request, shared_secret: 'secret').can?('App2' => { 'Entity' => ['create'] },
+                                                                             'App1' => { 'Entity1' => ['read'] })
+
+        # Assert
+        expect(allowed).to eq(true)
+      end
+    end
+
+    context 'with multiple permissions for resources and requested check' do
+      it 'should return true' do
+        # Arrange
+        permissions = JwtBouncer::Permissions.compress('App1' => { 'Entity1' => ['create', 'read'], 'Entity2' => ['create'] },
+                                                       'App2' => { 'Entity' => ['create'] },
+                                                       OMS: { PlaceOrder: [:create] })
+        token = JwtBouncer::Token.encode({ permissions: permissions }, 'secret')
+        request = double(:request, headers: { 'Authorization' => "Bearer #{token}" })
+
+        # Act
+        allowed = described_class.new(request, shared_secret: 'secret').can?('App2' => { Entity: ['create'] },
+                                                                             App1: { 'Entity1' => ['read', :create] })
+
+        # Assert
+        expect(allowed).to eq(true)
+      end
+    end
+
+    context 'when the permission is complex and some are allowed' do
+      it 'should return false' do
+        # Arrange
+        permissions = JwtBouncer::Permissions.compress('App1' => { 'Entity' => ['create'] },
+                                                       'App2' => { 'Entity' => ['create'] })
+        token = JwtBouncer::Token.encode({ permissions: permissions }, 'secret')
+        request = double(:request, headers: { 'Authorization' => "Bearer #{token}" })
+
+        # Act
+        allowed = described_class.new(request, shared_secret: 'secret').can?('App2' => { 'Entity' => ['create'] },
+                                                                             'App1' => { 'Entity' => ['read'] })
+
+        # Assert
+        expect(allowed).to eq(false)
+      end
+    end
+
+    context 'when the permission exists and is not allowed' do
+      it 'should return false' do
+        # Arrange
+        permissions = JwtBouncer::Permissions.compress('App' => { 'Entity' => [] })
+        token = JwtBouncer::Token.encode({ permissions: permissions }, 'secret')
+        request = double(:request, headers: { 'Authorization' => "Bearer #{token}" })
+
+        # Act
+        allowed = described_class.new(request, shared_secret: 'secret').can?('App' => { 'Entity' => ['create'] })
 
         # Assert
         expect(allowed).to eq(false)
@@ -105,14 +173,32 @@ RSpec.describe JwtBouncer::Request do
     context 'when the permission does not exist' do
       it 'should return false' do
         # Arrange
-        token = JwtBouncer::Token.encode({ permissions: {} }, 'secret')
+        permissions = JwtBouncer::Permissions.compress({})
+        token = JwtBouncer::Token.encode({ permissions: permissions }, 'secret')
         request = double(:request, headers: { 'Authorization' => "Bearer #{token}" })
 
         # Act
-        allowed = described_class.new(request, shared_secret: 'secret').can?(:update_product)
+        allowed = described_class.new(request, shared_secret: 'secret').can?('App' => { 'Entity' => ['create'] })
 
         # Assert
         expect(allowed).to eq(false)
+      end
+    end
+
+    context 'when the permission uses symbols is complex and is allowed' do
+      it 'should return true' do
+        # Arrange
+        permissions = JwtBouncer::Permissions.compress(App1: { Entity1: [:read], Entity2: [:create] },
+                                                       App2: { Entity: [:create] })
+        token = JwtBouncer::Token.encode({ permissions: permissions }, 'secret')
+        request = double(:request, headers: { 'Authorization' => "Bearer #{token}" })
+
+        # Act
+        allowed = described_class.new(request, shared_secret: 'secret').can?('App2' => { 'Entity' => ['create'] },
+                                                                             'App1' => { 'Entity1' => ['read'] })
+
+        # Assert
+        expect(allowed).to eq(true)
       end
     end
   end

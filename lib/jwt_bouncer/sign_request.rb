@@ -1,5 +1,6 @@
 # frozen-string-literal: true
 require 'jwt_bouncer/token'
+require 'jwt_bouncer/permissions'
 
 module JwtBouncer
   module SignRequest
@@ -8,12 +9,11 @@ module JwtBouncer
       request
     end
 
-    private
-
-    def self.generate_token(permissions: {}, actor: {}, shared_secret:, expiry: nil)
+    def self.generate_token(permissions: {}, actor: {}, account_reference:, shared_secret:, expiry: nil)
       payload = {
-        permissions: permissions,
-        actor: actor
+        permissions: Permissions.compress(permissions),
+        actor: actor,
+        account_reference: account_reference
       }
       Token.encode(payload, shared_secret, expiry: expiry)
     end

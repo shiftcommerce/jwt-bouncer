@@ -9,7 +9,7 @@ RSpec.describe JwtBouncer::SignRequest do
       request = double(:request, headers: {})
 
       # Act
-      described_class.call(request, shared_secret: 'test', permissions: { update_product: true })
+      described_class.call(request, shared_secret: 'test', account_reference: 'ac', permissions: { 'App' => { 'Entity' => ['create'] } })
 
       # Assert
       token_regexp = /\ABearer\s(.*)\z/i
@@ -22,12 +22,12 @@ RSpec.describe JwtBouncer::SignRequest do
       request = double(:request, headers: {})
 
       # Act
-      described_class.call(request, shared_secret: shared_secret, permissions: { update_product: true })
+      described_class.call(request, shared_secret: shared_secret, account_reference: 'ac', permissions: { 'App' => { 'Entity' => ['create'] } })
 
       # Assert
       parsed_request = JwtBouncer::Request.new(request, shared_secret: shared_secret)
       expect(parsed_request.authenticated?).to eq(true)
-      expect(parsed_request.can?(:update_product)).to eq(true)
+      expect(parsed_request.can?('App' => { 'Entity' => ['create'] })).to eq(true)
     end
   end
 end

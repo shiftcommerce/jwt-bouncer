@@ -15,7 +15,7 @@ module JwtBouncer
     end
 
     def self.decode(token, shared_secret)
-      JWT.decode(token, shared_secret, true, { algorithm: ALGORITHM, verify_iat: true })[0]['data']
+      JWT.decode(token, shared_secret, true, algorithm: ALGORITHM, verify_iat: true).dig(0, 'data')
     end
   end
 end

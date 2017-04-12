@@ -11,10 +11,9 @@ RSpec.describe JwtBouncer::Token do
 
         input_data = {
           permissions: {
-            create_product: true,
-            read_product: true,
-            update_product: true,
-            destroy_product: false
+            'App1' => { 'Entity' => ['create', 'read'] },
+            'App2' => { 'Entity' => ['read'] },
+            'App3' => { 'Entity1' => ['read'], 'Entity2' => ['create'] }
           }
         }.with_indifferent_access
 
@@ -34,10 +33,9 @@ RSpec.describe JwtBouncer::Token do
 
         input_data = {
           permissions: {
-            create_product: true,
-            read_product: true,
-            update_product: true,
-            destroy_product: false
+            'App1' => { 'Entity' => ['create', 'read'] },
+            'App2' => { 'Entity' => ['read'] },
+            'App3' => { 'Entity1' => ['read'], 'Entity2' => ['create'] }
           }
         }.with_indifferent_access
 
@@ -45,9 +43,9 @@ RSpec.describe JwtBouncer::Token do
         encoded_token = described_class.encode(input_data, shared_secret, expiry: Time.now.utc.to_i - 30)
 
         # Assert
-        expect {
+        expect do
           described_class.decode(encoded_token, shared_secret)
-        }.to raise_error(JWT::ExpiredSignature)
+        end.to raise_error(JWT::ExpiredSignature)
       end
     end
 
@@ -58,10 +56,9 @@ RSpec.describe JwtBouncer::Token do
 
         input_data = {
           permissions: {
-            create_product: true,
-            read_product: true,
-            update_product: true,
-            destroy_product: false
+            'App1' => { 'Entity' => ['create', 'read'] },
+            'App2' => { 'Entity' => ['read'] },
+            'App3' => { 'Entity1' => ['read'], 'Entity2' => ['create'] }
           }
         }.with_indifferent_access
 
@@ -69,9 +66,9 @@ RSpec.describe JwtBouncer::Token do
         encoded_token = described_class.encode(input_data, shared_secret)
 
         # Assert
-        expect {
+        expect do
           described_class.decode(encoded_token, 'invalid_key')
-        }.to raise_error(JWT::VerificationError)
+        end.to raise_error(JWT::VerificationError)
       end
     end
   end

@@ -1,13 +1,15 @@
 # frozen-string-literal: true
+
 require 'jwt_bouncer/token'
+require 'jwt_bouncer/permissions'
 require 'jwt'
 
 module JwtBouncer
   class Request
-    HEADER = 'Authorization'
+    HEADER = 'Authorization'.freeze
 
     def initialize(request, shared_secret: nil)
-      @encoded_token = extract_token(request)
+      @encoded_token = Request.extract_token(request)
       @shared_secret = shared_secret
     end
 
@@ -21,12 +23,25 @@ module JwtBouncer
       decoded_token['actor']
     end
 
+    def account_reference
+      decoded_token['account_reference']
+    end
+
     def permissions
-      decoded_token['permissions']
+      @permissions ||= Permissions.decompress(decoded_token['permissions'])
     end
 
     def can?(action)
-      permissions && !!permissions[action.to_s]
+      destructured_action_permissions = Permissions.destructure(action)
+      matching_permissions = destructured_action_permissions & destructured_permissions
+      matching_permissions == destructured_action_permissions
+    end
+
+    # extracts the encoded token from the given request
+    def self.extract_token(request)
+      return nil unless request.headers.key?(HEADER)
+      matches = request.headers.fetch(HEADER).match(/\ABearer\s(.*)\z/i)
+      matches[1] if matches
     end
 
     private
@@ -35,11 +50,8 @@ module JwtBouncer
       @decoded_token ||= Token.decode(@encoded_token, @shared_secret)
     end
 
-    # extracts the encoded token from the given request
-    def extract_token(request)
-      return nil unless request.headers.key?(HEADER)
-      matches = request.headers.fetch(HEADER).match(/\ABearer\s(.*)\z/i)
-      matches[1] if matches
+    def destructured_permissions
+      Permissions.destructure(permissions)
     end
   end
 end
