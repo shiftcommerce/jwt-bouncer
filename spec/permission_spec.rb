@@ -7,7 +7,7 @@ RSpec.describe JwtBouncer::Permissions do
   
       it 'destructures a simple permission' do
         # Arrange
-        permissions = {'App' => { 'Entity' => [ 'create' ]}}
+        permissions = { 'App' => { 'Entity' => ['create'] } }
         
         # Act
         destructured = JwtBouncer::Permissions.destructure(permissions)
@@ -18,13 +18,13 @@ RSpec.describe JwtBouncer::Permissions do
     
       it 'ignores a resource with empty permissions' do
         # Arrange
-        permissions = { 'App' => { 'Entity' => [ ] }}
+        permissions = { 'App' => { 'Entity' => [] } }
         
         # Act
         destructured = JwtBouncer::Permissions.destructure(permissions)
         
         # Assert
-        expect(destructured).to eq([ ])
+        expect(destructured).to eq([])
       end
     
       it 'returns multiple permissions for a resource' do
@@ -35,15 +35,15 @@ RSpec.describe JwtBouncer::Permissions do
         destructured = JwtBouncer::Permissions.destructure(permissions)
         
         # Assert
-        expect(destructured).to eq([ 'App_Entity_create', 'App_Entity_read' ])
+        expect(destructured).to eq(['App_Entity_create', 'App_Entity_read'])
       end
     
       it 'returns multuple service and resource permissions' do
         # Arrange
         permissions = {
-          'App1' => { 'Entity' => [ 'create', 'read' ] },
-          'App2' => { 'Entity' => [ 'read' ] },
-          'App3' => { 'Entity1' => [ 'read' ], 'Entity2' => [ 'create' ] }
+          'App1' => { 'Entity' => ['create', 'read'] },
+          'App2' => { 'Entity' => ['read'] },
+          'App3' => { 'Entity1' => ['read'], 'Entity2' => ['create'] }
         }
         
         # Act

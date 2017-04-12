@@ -6,6 +6,7 @@ require 'jwt'
 
 module JwtBouncer
   class Request
+    
     HEADER = 'Authorization'
 
     def initialize(request, shared_secret: nil)
