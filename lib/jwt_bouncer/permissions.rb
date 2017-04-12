@@ -1,6 +1,7 @@
 # frozen-string-literal: true
 
 require 'jwt'
+require 'zlib'
 
 module JwtBouncer
   module Permissions

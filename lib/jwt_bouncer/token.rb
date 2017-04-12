@@ -3,7 +3,7 @@ require 'jwt'
 
 module JwtBouncer
   module Token
-    ALGORITHM = 'HS256'.freeze
+    ALGORITHM = 'HS256'
 
     def self.encode(data, shared_secret, expiry: nil)
       # setup our base payload
@@ -15,7 +15,7 @@ module JwtBouncer
     end
 
     def self.decode(token, shared_secret)
-      JWT.decode(token, shared_secret, true, algorithm: ALGORITHM, verify_iat: true)[0]['data']
+      JWT.decode(token, shared_secret, true, algorithm: ALGORITHM, verify_iat: true).dig(0, 'data')
     end
   end
 end

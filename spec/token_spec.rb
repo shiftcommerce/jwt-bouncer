@@ -11,7 +11,7 @@ RSpec.describe JwtBouncer::Token do
 
         input_data = {
           permissions: {
-            'App1' => { 'Entity' => %w(create read) },
+            'App1' => { 'Entity' => ['create', 'read'] },
             'App2' => { 'Entity' => ['read'] },
             'App3' => { 'Entity1' => ['read'], 'Entity2' => ['create'] }
           }
@@ -33,7 +33,7 @@ RSpec.describe JwtBouncer::Token do
 
         input_data = {
           permissions: {
-            'App1' => { 'Entity' => %w(create read) },
+            'App1' => { 'Entity' => ['create', 'read'] },
             'App2' => { 'Entity' => ['read'] },
             'App3' => { 'Entity1' => ['read'], 'Entity2' => ['create'] }
           }
@@ -56,7 +56,7 @@ RSpec.describe JwtBouncer::Token do
 
         input_data = {
           permissions: {
-            'App1' => { 'Entity' => %w(create read) },
+            'App1' => { 'Entity' => ['create', 'read'] },
             'App2' => { 'Entity' => ['read'] },
             'App3' => { 'Entity1' => ['read'], 'Entity2' => ['create'] }
           }

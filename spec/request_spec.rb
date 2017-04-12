@@ -123,7 +123,7 @@ RSpec.describe JwtBouncer::Request do
     context 'with multiple permissions for resources and requested check' do
       it 'should return true' do
         # Arrange
-        permissions = JwtBouncer::Permissions.compress('App1' => { 'Entity1' => %w(create read), 'Entity2' => ['create'] },
+        permissions = JwtBouncer::Permissions.compress('App1' => { 'Entity1' => ['create', 'read'], 'Entity2' => ['create'] },
                                                        'App2' => { 'Entity' => ['create'] },
                                                        OMS: { PlaceOrder: [:create] })
         token = JwtBouncer::Token.encode({ permissions: permissions }, 'secret')

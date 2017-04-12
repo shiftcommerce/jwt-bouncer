@@ -1,7 +1,6 @@
 # frozen-string-literal: true
 require 'jwt_bouncer/token'
 require 'jwt_bouncer/permissions'
-require 'zlib'
 
 module JwtBouncer
   module SignRequest
