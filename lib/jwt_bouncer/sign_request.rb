@@ -5,7 +5,6 @@ require 'zlib'
 
 module JwtBouncer
   module SignRequest
-    
     def self.call(request, **options)
       request.headers['Authorization'] = "Bearer #{generate_token(**options)}"
       request
@@ -19,6 +18,5 @@ module JwtBouncer
       }
       Token.encode(payload, shared_secret, expiry: expiry)
     end
-    
   end
 end

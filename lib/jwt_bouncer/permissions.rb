@@ -4,7 +4,6 @@ require 'jwt'
 
 module JwtBouncer
   module Permissions
-  
     def self.compress(permissions)
       stream = StringIO.new
       zip = Zlib::GzipWriter.new(stream)
@@ -13,10 +12,10 @@ module JwtBouncer
       ensure
         zip.close
       end
-      
+
       Base64.encode64(stream.string)
     end
-  
+
     def self.decompress(permissions)
       unzipped_stream = StringIO.new
       StringIO.open(Base64.decode64(permissions)) do |stream|
@@ -27,10 +26,10 @@ module JwtBouncer
           unzip.close
         end
       end
-      
+
       JSON.parse(unzipped_stream.string)
     end
-    
+
     def self.destructure(permissions)
       destructured_permissions = []
       permissions.each do |service, resources|
@@ -42,6 +41,5 @@ module JwtBouncer
       end
       destructured_permissions
     end
-    
   end
 end

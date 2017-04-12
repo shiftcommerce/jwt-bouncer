@@ -27,7 +27,7 @@ RSpec.describe JwtBouncer::SignRequest do
       # Assert
       parsed_request = JwtBouncer::Request.new(request, shared_secret: shared_secret)
       expect(parsed_request.authenticated?).to eq(true)
-      expect(parsed_request.can?({ 'App' => { 'Entity' => ['create'] } } )).to eq(true)
+      expect(parsed_request.can?('App' => { 'Entity' => ['create'] })).to eq(true)
     end
   end
 end

@@ -6,8 +6,7 @@ require 'jwt'
 
 module JwtBouncer
   class Request
-    
-    HEADER = 'Authorization'
+    HEADER = 'Authorization'.freeze
 
     def initialize(request, shared_secret: nil)
       @encoded_token = Request.extract_token(request)
@@ -25,9 +24,9 @@ module JwtBouncer
     end
 
     def account_reference
-      decoded_token["account_reference"]
+      decoded_token['account_reference']
     end
-    
+
     def permissions
       @permissions ||= Permissions.decompress(decoded_token['permissions'])
     end
@@ -54,6 +53,5 @@ module JwtBouncer
     def destructured_permissions
       Permissions.destructure(permissions)
     end
-    
   end
 end
