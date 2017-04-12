@@ -92,12 +92,12 @@ RSpec.describe JwtBouncer::Request do
       
       it 'should return true' do
         # Arrange
-        permissions = JwtBouncer::Permissions.compress({ 'PIM' => { 'Product' => [ 'create' ]} })
+        permissions = JwtBouncer::Permissions.compress({'App' => { 'Entity' => [ 'create' ]}})
         token = JwtBouncer::Token.encode({ permissions: permissions }, 'secret')
         request = double(:request, headers: { 'Authorization' => "Bearer #{token}" })
 
         # Act
-        allowed = described_class.new(request, shared_secret: 'secret').can?({ 'PIM' => { 'Product' => [ 'create' ]} })
+        allowed = described_class.new(request, shared_secret: 'secret').can?({'App' => { 'Entity' => [ 'create' ]}})
 
         # Assert
         expect(allowed).to eq(true)
@@ -109,12 +109,12 @@ RSpec.describe JwtBouncer::Request do
       
       it 'should return true' do
         # Arrange
-        permissions = JwtBouncer::Permissions.compress({ 'Inventory' => { 'StockLevel' => [ 'read' ], 'StockReset' => [ 'create' ]}})
+        permissions = JwtBouncer::Permissions.compress({ 'App' => { 'Enity1' => [ 'read' ], 'Entity2' => [ 'create' ]}})
         token = JwtBouncer::Token.encode({ permissions: permissions }, 'secret')
         request = double(:request, headers: { 'Authorization' => "Bearer #{token}" })
 
         # Act
-        allowed = described_class.new(request, shared_secret: 'secret').can?({ 'Inventory' => { 'StockLevel' => [ 'read' ], 'StockReset' => [ 'create' ]}})
+        allowed = described_class.new(request, shared_secret: 'secret').can?({ 'App' => { 'Enity1' => [ 'read' ], 'Entity2' => [ 'create' ]}})
 
         # Assert
         expect(allowed).to eq(true)
@@ -123,16 +123,16 @@ RSpec.describe JwtBouncer::Request do
       it 'should return true' do
         # Arrange
         permissions = JwtBouncer::Permissions.compress({
-                                                         'Inventory' => { 'StockLevel' => [ 'read' ], 'StockReset' => [ 'create' ]},
-                                                         'PIM' => { 'Product' => [ 'create'] },
+                                                         'App1' => { 'Entity1' => [ 'read' ], 'Entity2' => [ 'create' ]},
+                                                         'App2' => { 'Entity' => [ 'create'] },
                                                        })
         token = JwtBouncer::Token.encode({ permissions: permissions }, 'secret')
         request = double(:request, headers: { 'Authorization' => "Bearer #{token}" })
   
         # Act
         allowed = described_class.new(request, shared_secret: 'secret').can?({
-                                                                               'PIM' => { 'Product' => [ 'create'] },
-                                                                               'Inventory' => { 'StockLevel' => [ 'read' ]},
+                                                                               'App2' => { 'Entity' => [ 'create'] },
+                                                                               'App1' => { 'Entity1' => [ 'read' ]},
                                                                              })
   
         # Assert
@@ -146,8 +146,8 @@ RSpec.describe JwtBouncer::Request do
       it 'should return true' do
         # Arrange
         permissions = JwtBouncer::Permissions.compress({
-                                                         'Inventory' => { 'StockLevel' => [ 'create', 'read' ], 'StockReset' => [ 'create' ]},
-                                                         'PIM' => { 'Product' => [ 'create'] },
+                                                         'App1' => { 'Entity1' => [ 'create', 'read' ], 'Entity2' => [ 'create' ]},
+                                                         'App2' => { 'Entity' => [ 'create'] },
                                                          OMS: { PlaceOrder: [ :create] },
                                                        })
         token = JwtBouncer::Token.encode({ permissions: permissions }, 'secret')
@@ -155,8 +155,8 @@ RSpec.describe JwtBouncer::Request do
     
         # Act
         allowed = described_class.new(request, shared_secret: 'secret').can?({
-                                                                               'PIM' => { Product: [ 'create'] },
-                                                                               Inventory: { 'StockLevel' => [ 'read', :create ]},
+                                                                               'App2' => { Entity: [ 'create'] },
+                                                                               App1: { 'Entity1' => [ 'read', :create ]},
                                                                              })
     
         # Assert
@@ -170,16 +170,16 @@ RSpec.describe JwtBouncer::Request do
       it 'should return false' do
         # Arrange
         permissions = JwtBouncer::Permissions.compress({
-                                                         'Inventory' => { 'StockReset' => [ 'create' ]},
-                                                         'PIM' => { 'Product' => [ 'create'] },
+                                                         'App1' => { 'Entity' => [ 'create' ]},
+                                                         'App2' => { 'Entity' => [ 'create'] },
                                                        })
         token = JwtBouncer::Token.encode({ permissions: permissions }, 'secret')
         request = double(:request, headers: { 'Authorization' => "Bearer #{token}" })
     
         # Act
         allowed = described_class.new(request, shared_secret: 'secret').can?({
-                                                                               'PIM' => { 'Product' => [ 'create'] },
-                                                                               'Inventory' => { 'StockLevel' => [ 'read' ]},
+                                                                               'App2' => { 'Entity' => [ 'create'] },
+                                                                               'App1' => { 'Entity' => [ 'read' ]},
                                                                              })
     
         # Assert
@@ -192,12 +192,12 @@ RSpec.describe JwtBouncer::Request do
       
       it 'should return false' do
         # Arrange
-        permissions = JwtBouncer::Permissions.compress({'PIM' => { 'Product' => [ ] }})
+        permissions = JwtBouncer::Permissions.compress({'App' => { 'Entity' => [ ] }})
         token = JwtBouncer::Token.encode({ permissions: permissions }, 'secret')
         request = double(:request, headers: { 'Authorization' => "Bearer #{token}" })
     
         # Act
-        allowed = described_class.new(request, shared_secret: 'secret').can?({'PIM' => { 'Product' => [ 'create'] }})
+        allowed = described_class.new(request, shared_secret: 'secret').can?({'App' => { 'Entity' => [ 'create'] }})
     
         # Assert
         expect(allowed).to eq(false)
@@ -214,7 +214,7 @@ RSpec.describe JwtBouncer::Request do
         request = double(:request, headers: { 'Authorization' => "Bearer #{token}" })
     
         # Act
-        allowed = described_class.new(request, shared_secret: 'secret').can?({'PIM' => { 'Product' => [ 'create'] }})
+        allowed = described_class.new(request, shared_secret: 'secret').can?({'App' => { 'Entity' => [ 'create'] }})
     
         # Assert
         expect(allowed).to eq(false)
@@ -227,16 +227,16 @@ RSpec.describe JwtBouncer::Request do
       it 'should return true' do
         # Arrange
         permissions = JwtBouncer::Permissions.compress({
-                                                         Inventory: { StockLevel: [ :read ], StockReset: [ :create ]},
-                                                         PIM: { Product: [ :create ] },
+                                                         App1: { Entity1: [ :read ], Entity2: [ :create ]},
+                                                         App2: { Entity: [ :create ] },
                                                        })
         token = JwtBouncer::Token.encode({ permissions: permissions }, 'secret')
         request = double(:request, headers: { 'Authorization' => "Bearer #{token}" })
     
         # Act
         allowed = described_class.new(request, shared_secret: 'secret').can?({
-                                                                               'PIM' => { 'Product' => [ 'create'] },
-                                                                               'Inventory' => { 'StockLevel' => [ 'read' ]},
+                                                                               'App2' => { 'Entity' => [ 'create'] },
+                                                                               'App1' => { 'Entity1' => [ 'read' ]},
                                                                              })
     
         # Assert

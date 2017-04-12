@@ -14,9 +14,9 @@ RSpec.describe JwtBouncer::Token do
 
         input_data = {
           permissions: {
-            'PIM' => { 'Product' => [ 'create', 'read' ] },
-            'OMS' => { 'StockLevel' => [ 'read' ] },
-            'Inventory' => { 'StockLevel' => [ 'read' ], 'StockAllocation' => [ 'create' ] }
+            'App1' => { 'Entity' => [ 'create', 'read' ] },
+            'App2' => { 'Entity' => [ 'read' ] },
+            'App3' => { 'Entity1' => [ 'read' ], 'Entity2' => [ 'create' ] }
           }
         }.with_indifferent_access
 
@@ -38,9 +38,9 @@ RSpec.describe JwtBouncer::Token do
 
         input_data = {
           permissions: {
-            'PIM' => { 'Product' => [ 'create', 'read' ] },
-            'OMS' => { 'StockLevel' => [ 'read' ] },
-            'Inventory' => { 'StockLevel' => [ 'read' ], 'StockAllocation' => [ 'create' ] }
+            'App1' => { 'Entity' => [ 'create', 'read' ] },
+            'App2' => { 'Entity' => [ 'read' ] },
+            'App3' => { 'Entity1' => [ 'read' ], 'Entity2' => [ 'create' ] }
           }
         }.with_indifferent_access
 
@@ -62,9 +62,9 @@ RSpec.describe JwtBouncer::Token do
 
         input_data = {
           permissions: {
-            'PIM' => { 'Product' => [ 'create', 'read' ] },
-            'OMS' => { 'StockLevel' => [ 'read' ] },
-            'Inventory' => { 'StockLevel' => [ 'read' ], 'StockAllocation' => [ 'create' ] }
+            'App1' => { 'Entity' => [ 'create', 'read' ] },
+            'App2' => { 'Entity' => [ 'read' ] },
+            'App3' => { 'Entity1' => [ 'read' ], 'Entity2' => [ 'create' ] }
           }
         }.with_indifferent_access
 
